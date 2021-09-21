@@ -16,3 +16,6 @@ xattr -d com.apple.quarantine chromedriver
 #### chrome 버전 확인 
 크롭 우측 상단 도움말 -> about google chrome
 
+
+### github
+https://github.com/SeleniumHQ/selenium

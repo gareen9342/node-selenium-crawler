@@ -1,27 +1,38 @@
-const webdriver = require('selenium-webdriver');
-const chrome = require('selenium-webdriver/chrome');
+const {Builder, By, Key, until} = require('selenium-webdriver');
 
-const run = async () => {
-    // 1. chromedriver 경로 설정
-    // chromedriver가 있는 경로를 입력
-    const service = new chrome.ServiceBuilder('./chromedriver').build();
-    chrome.setDefaultService(service);
-
-    // 2. chrome 브라우저 빌드
-    const driver = await new webdriver.Builder()
+(async function example() {
+    let driver = await new Builder()
         .forBrowser('chrome')
         .build();
+    try {
+        await driver.get('https://www.10000recipe.com/');
+        let searchInput = await driver.findElement(By.id('srhRecipeText'));
 
-    // 3. google 사이트 열기
-    await driver.get('https://google.com');
+        let keyWord = '버섯';
+        searchInput.sendKeys(keyWord, Key.ENTER);
 
-    // 4. 3초 후에 브라우저 종료
-    setTimeout(async () => {
-        await driver.quit();
-        process.exit(0);
-    }, 3000);
-}
+        await driver.wait(until.elementLocated(By.className('common_sp_list_ul')), 10000);
 
-run();
+        let resultElements = await driver.findElements(By.className('common_sp_caption_tit'));
 
-// 출처: https://dreamjy.tistory.com/96 [컬쳐N라이프]
+        // console.log(resultElements)
+
+        Promise.all(resultElements.map(x => x.getText())).then((values) => {
+            console.log(values)
+        })
+
+
+
+        // 4초를 기다린다.
+        try {
+            await driver.wait(() => { return false; }, 4000);
+        } catch (err) {
+            console.error(err)
+        }
+
+    }catch (err){
+        console.error(err)
+    }finally{
+        driver.quit();
+    }
+})();
